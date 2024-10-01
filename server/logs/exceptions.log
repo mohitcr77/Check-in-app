@@ -1,0 +1,42 @@
+2024-09-04 21:25:25 [[31merror[39m]: uncaughtException: mongoose is not defined
+ReferenceError: mongoose is not defined
+    at checkOut (file:///D:/Attendance%20app/server/controllers/attendanceController.js:32:9)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-09-04 21:25:46 [[31merror[39m]: uncaughtException: mongoose is not defined
+ReferenceError: mongoose is not defined
+    at checkOut (file:///D:/Attendance%20app/server/controllers/attendanceController.js:32:9)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-09-04 21:27:42 [[31merror[39m]: uncaughtException: mongoose is not defined
+ReferenceError: mongoose is not defined
+    at checkOut (file:///D:/Attendance%20app/server/controllers/attendanceController.js:32:9)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-09-04 21:30:59 [[31merror[39m]: uncaughtException: mongoose is not defined
+ReferenceError: mongoose is not defined
+    at checkOut (file:///D:/Attendance%20app/server/controllers/attendanceController.js:32:9)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-09-04 21:32:23 [[31merror[39m]: uncaughtException: mongoose is not defined
+ReferenceError: mongoose is not defined
+    at checkOut (file:///D:/Attendance%20app/server/controllers/attendanceController.js:32:9)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-09-07 12:41:34 [[31merror[39m]: uncaughtException: swaggerUi is not defined
+ReferenceError: swaggerUi is not defined
+    at file:///D:/Attendance%20app/server/index.js:23:22
+    at ModuleJob.run (node:internal/modules/esm/module_job:218:25)
+    at async ModuleLoader.import (node:internal/modules/esm/loader:329:24)
+    at async loadESM (node:internal/process/esm_loader:28:7)
+    at async handleMainPromise (node:internal/modules/run_main:113:12)
