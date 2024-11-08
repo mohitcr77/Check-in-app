@@ -1,10 +1,15 @@
 import User from '../models/User.js'
-
+import AttendanceRecord from '../models/AttendanceRecord.js'
+import { startOfDay, endOfDay } from "date-fns";
+import Location from '../models/Location.js'
 const adminCtrl = {
     getAllUsers: async (req, res) => {
         try {
-            const users = await User.find().select('-password');
-            res.json(users);
+            const {_id} = req.user.organization; 
+            
+            const users = await User.find({organization:_id}).select('-password');
+            const userNames = users.map(user => user.name);
+            res.json(userNames);
         } catch (error) {
             res.status(500).json({error : error.message})
         }
@@ -25,7 +30,11 @@ const adminCtrl = {
     },
     getUserAttendance: async (req, res) => {
         try {
-            const records = await AttendanceRecord.find({ user: req.user.userId });
+            const {userId} = req.params
+            const {_id} = req.user.organization; 
+            
+            // const users = await User.find({organization:_id}).select('-password');
+            const records = await AttendanceRecord.find({ user:userId }).select('check_in_time check_out_time') .sort({ check_in_time: -1 });
             res.json(records);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -55,7 +64,37 @@ const adminCtrl = {
         } catch (error) {
             res.status(500).json({ error: error.message });
         }
-    }
+    },
+        
+    getAttendanceByDate :async (req, res) => {
+        try {
+            const { location, date } = req.query;
+    
+            const startDate = new Date(`${date}T00:00:00Z`);
+            const endDate = new Date(`${date}T23:59:59.999Z`);
+    
+            const records = await AttendanceRecord.find({
+                location,
+                check_in_time: { $gte: startDate, $lte: endDate }
+            })
+            .populate("user", "name email")
+            .sort({ check_in_time: -1 });
+    
+            res.json(records);
+        } catch (error) {
+            res.status(500).json({ error: error.message });
+        }
+    },
+    //get office location
+        getLocationsByOrganization : async (req, res) => {
+            try {
+                const { organization } = req.user; 
+                const locations = await Location.find({ organization }).select('name _id');
+                
+                res.json(locations);
+            } catch (error) {
+                res.status(500).json({ error: error.message });
+            }}
 
 };
 

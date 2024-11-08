@@ -38,7 +38,7 @@ app.use(errorMiddleware);
 mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
         logger.info("MongoDB connected successfully.");
-        app.listen(PORT, () => {
+        app.listen(PORT, '0.0.0.0', () => {
             logger.info(`Server is running on port ${PORT}`);
         });
     })

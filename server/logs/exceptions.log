@@ -40,3 +40,10 @@ ReferenceError: swaggerUi is not defined
     at async ModuleLoader.import (node:internal/modules/esm/loader:329:24)
     at async loadESM (node:internal/process/esm_loader:28:7)
     at async handleMainPromise (node:internal/modules/run_main:113:12)
+2024-10-30 13:29:03 [[31merror[39m]: uncaughtException: Cannot set headers after they are sent to the client
+Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
+    at ServerResponse.setHeader (node:_http_outgoing:652:11)
+    at ServerResponse.header (D:\Attendance app\server\node_modules\express\lib\response.js:795:10)
+    at ServerResponse.json (D:\Attendance app\server\node_modules\express\lib\response.js:276:10)
+    at getAttendanceByDate (file:///D:/Attendance%20app/server/controllers/adminController.js:105:33)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)

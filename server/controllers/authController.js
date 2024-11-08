@@ -36,13 +36,14 @@ res.status(201).json({ user, accessToken });
     try {
       const user = await User.findOne({ email }).populate('organization'); 
       if (!user) return res.status(400).json({ msg: 'Invalid credentials' });
-
+      
       const isMatch = await compare(password, user.password);
 
       if (!isMatch) {
         return res.status(400).json({ msg: 'Invalid credentials' });
       }
-      const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
+      const accessToken = jwt.sign({ userId: user._id, role: user.role, 
+        organization: user.organization, name: user.name, email: user.email, joined: user.createdAt  }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
 
 res.status(201).json({ user, accessToken });
 
