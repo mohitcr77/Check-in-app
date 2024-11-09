@@ -1,2 +1,2 @@
-export const api = 'http://192.168.2.251:5000/api'
+export const api = 'https://check-in-app-qt3z.onrender.com/api'
 

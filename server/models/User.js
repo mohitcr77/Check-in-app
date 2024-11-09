@@ -26,8 +26,19 @@ role: {
 organization: {
   type: mongoose.Schema.Types.ObjectId,
   ref: 'Organization'
-}
+},
+profileImage: 
+ {type: String,
+  validate: {
+    validator: function(v) {
+      return /^https?:\/\/.+\..+$/.test(v);  // Simple regex to validate URL format
+    },
+    message: props => `${props.value} is not a valid URL!`
+  }},
 }, { timestamps: true });
+
+UserSchema.index({ organization: 1 });
+
 
 const User = model('User', UserSchema);
 

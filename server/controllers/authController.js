@@ -11,6 +11,7 @@ const authCtrl = {
   register: async (req, res) => {
     try {
       const { name, email, password, role } = req.body;
+      console.log("accessed");
       
       let user = await User.findOne({ email }).populate('organization');
       if (user) {

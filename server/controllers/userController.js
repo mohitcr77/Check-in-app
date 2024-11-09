@@ -1,6 +1,6 @@
 import User from "../models/User.js";
-import bcrypt from "bcrypt"
-
+import bcrypt from "bcrypt";
+import s3 from '../config/awsConfig.js'
 const userCtrl = {
   getProfile: async (req, res) => {
     try {
@@ -42,7 +42,39 @@ const userCtrl = {
     } catch (error) {
         res.status(500).json({error: error.message})
     }
-  }
+  },
+  uploadProfileImage: async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ error: "Please upload an image file." });
+      }
+
+      // Upload image to S3
+      const params = {
+        Bucket: process.env.S3_BUCKET_NAME,
+        Key: `profile-images/${req.user.userId}-${Date.now()}`, // Unique file name
+        Body: req.file.buffer,
+        ContentType: req.file.mimetype
+      };
+
+      const s3Response = await s3.upload(params).promise();
+
+      // Update user's profile image URL in database
+      const user = await User.findByIdAndUpdate(
+        req.user.userId,
+        { profileImage: s3Response.Location },
+        { new: true }
+      );
+
+      res.status(200).json({
+        msg: "Profile image uploaded successfully",
+        profileImage: user.profileImage,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to upload image" });
+    }
+  },
 };
 
 export default userCtrl

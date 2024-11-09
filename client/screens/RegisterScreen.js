@@ -20,6 +20,8 @@ const RegisterScreen = ({ navigation, route }) => {
       if (role === "employee") {
         payload.organizationCode = organizationCode;
       }
+      // console.log(payload);
+      
       const response = await axios.post(`${api}/auth/register`, payload);
       
       const { accessToken } = response.data;
@@ -33,7 +35,7 @@ const RegisterScreen = ({ navigation, route }) => {
         navigation.navigate("JoinOrganization");
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       Alert.alert(
         "Registration failed",
         error.response?.data?.msg || "An error occurred"

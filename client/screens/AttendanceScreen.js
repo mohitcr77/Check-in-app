@@ -108,7 +108,7 @@ export default function AttendanceScreen({ route, navigation }) {
             source={
               action == "checkin"
                 ? require("../assets/images/checkIn.png")
-                : require("../assets/images/employee.png")
+                : require("../assets/images/check-out.png")
             }
             style={{ width: 350, height: 350 }}
             resizeMode="cover"
