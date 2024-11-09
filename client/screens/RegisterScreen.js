@@ -9,7 +9,6 @@ const RegisterScreen = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  // const [role, setRole] = useState('employee')
   const { role } = route.params;
   const [organizationCode, setOrganizationCode] = useState("");
 
@@ -35,7 +34,6 @@ const RegisterScreen = ({ navigation, route }) => {
         navigation.navigate("JoinOrganization");
       }
     } catch (error) {
-      // console.log(error);
       Alert.alert(
         "Registration failed",
         error.response?.data?.msg || "An error occurred"
