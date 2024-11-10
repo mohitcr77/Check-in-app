@@ -22,7 +22,8 @@ const authCtrl = {
       // console.log(user);
       await user.save();
 
-      const accessToken = jwt.sign({ userId: user._id, role: user.role }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
+      const accessToken = jwt.sign({ userId: user._id, role: user.role, 
+        organization: user.organization, name: user.name, email: user.email, joined: user.createdAt  }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '30d' });
 
 res.status(201).json({ user, accessToken });
 

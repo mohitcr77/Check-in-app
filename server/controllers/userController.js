@@ -4,6 +4,7 @@ import s3 from '../config/awsConfig.js'
 const userCtrl = {
   getProfile: async (req, res) => {
     try {
+      // const {userId} = req.user
       const user = await User.findById(req.user.userId).select("-password");
       if (!user) return res.status(404).json({ msg: "User not found" });
       res.json(user);
