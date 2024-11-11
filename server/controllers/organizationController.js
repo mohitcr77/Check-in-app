@@ -25,13 +25,13 @@ const organizationCtrl = {
     },
 
     joinOrganization: async (req, res) => {
-        const { orgCode } = req.body;
-        orgCode = orgCode.toLowerCase();
         try {
-            const organization = await Organization.findOne({ code: orgCode });
+            const { orgCode } = req.body;
+            const organization = await Organization.findOne({ code: orgCode.toLowerCase()});
             if (!organization) return res.status(404).json({ msg: 'Organization not found' });
 
-
+            console.log(organization);
+            
             await User.findByIdAndUpdate(req.user.userId, { organization: organization._id },{new : true});
 
             res.json({ msg: `Joined organization ${organization.name}` });

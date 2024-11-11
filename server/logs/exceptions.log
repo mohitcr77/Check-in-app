@@ -47,3 +47,17 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
     at ServerResponse.json (D:\Attendance app\server\node_modules\express\lib\response.js:276:10)
     at getAttendanceByDate (file:///D:/Attendance%20app/server/controllers/adminController.js:105:33)
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-11-11 12:02:42 [[31merror[39m]: uncaughtException: Assignment to constant variable.
+TypeError: Assignment to constant variable.
+    at joinOrganization (file:///D:/Attendance%20app/server/controllers/organizationController.js:29:17)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2024-11-11 12:06:55 [[31merror[39m]: uncaughtException: Assignment to constant variable.
+TypeError: Assignment to constant variable.
+    at joinOrganization (file:///D:/Attendance%20app/server/controllers/organizationController.js:29:17)
+    at Layer.handle [as handle_request] (D:\Attendance app\server\node_modules\express\lib\router\layer.js:95:5)
+    at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
+    at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
