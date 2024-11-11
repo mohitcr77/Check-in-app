@@ -1,4 +1,3 @@
-// ProfileImageUploadScreen.js
 import React, { useState } from "react";
 import { View, Image, StyleSheet, Alert, TouchableOpacity } from "react-native";
 import * as ImagePicker from "expo-image-picker";

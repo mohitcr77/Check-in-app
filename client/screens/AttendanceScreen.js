@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../services/API';
 import { getDistance } from '../helpers/getDistance';
-import { Layout, Text, Input, Button, Toggle } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Toggle, Spinner } from "@ui-kitten/components";
 
 export default function AttendanceScreen({ route, navigation }) {
   const { action } = route.params; 
@@ -116,13 +116,13 @@ export default function AttendanceScreen({ route, navigation }) {
       </Layout>
       {loading ? (
         <>
-        <ActivityIndicator size="large" color="#b8b8c4" /> 
+        <Spinner status={action === 'checkin'? 'success' : "warning"} size="large" /> 
         <Text>Fetching your location...</Text>
         </>
       ) : (
         <>
           <Text>{action === 'checkin' ? 'Checking In...' : 'Checking Out...'}</Text>
-          <Button style={{margin:15}} size='large' appearance='ghost' onPress={handleAttendance} >{`Confirm ${action}`}</Button>
+          <Button style={{margin:15}} size='large' status={action === 'checkin' ? "success" : "warning"} appearance='ghost' onPress={handleAttendance} >{`Confirm ${action}`}</Button>
         </>
       )}
     </Layout>

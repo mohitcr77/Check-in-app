@@ -1,4 +1,4 @@
-import { StyleSheet, Alert } from 'react-native'
+import { Keyboard, TouchableWithoutFeedback, StyleSheet, Alert } from 'react-native'
 import React, { useState } from 'react'
 import { api } from '../../services/API'
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -26,12 +26,14 @@ const CreateOrganizationScreen = ({navigation}) => {
         }
     }
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Layout style={styles.container}>
       <Input size='large' style={styles.input} placeholder="Organization Name" value={name} onChangeText={setName} />
       <Input size='large' style={styles.input} placeholder="Set Organization Code" value={code} onChangeText={setCode} />
       <Input size='large' style={styles.input} placeholder="Organization Address" value={address} onChangeText={setAddress} />
       <Button status="primary" appearance='outline' onPress={handleCreateOrganization} >Create Organization</Button>
     </Layout>
+    </TouchableWithoutFeedback>
   )
 }
 

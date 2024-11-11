@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import {  KeyboardAvoidingView, Platform,Alert, StyleSheet, Switch } from 'react-native';
+import {  KeyboardAvoidingView, Platform,Alert, StyleSheet, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../services/API';
@@ -54,7 +54,8 @@ const CreateOfficeLocation = ({navigation}) => {
     );
 
     Alert.alert('Office location created successfully');
-    navigation.navigate('Home');
+    await AsyncStorage.removeItem("token");
+    navigation.replace("Login");
   } catch (error) {
     // console.log(error.response.data);
     
@@ -72,6 +73,7 @@ const toggleCurrentLocation = async () => {
   }
 };
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Layout style={styles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -127,6 +129,7 @@ const toggleCurrentLocation = async () => {
     <Button appearance='outline' onPress={handleCreateLocation} >Create Office Location</Button>
   </KeyboardAvoidingView>
   </Layout>
+  </TouchableWithoutFeedback>
   )
 }
 
@@ -152,6 +155,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-around'
       },
       loader:{
-
+        
       }
 })

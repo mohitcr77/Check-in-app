@@ -26,6 +26,7 @@ const organizationCtrl = {
 
     joinOrganization: async (req, res) => {
         const { orgCode } = req.body;
+        orgCode = orgCode.toLowerCase();
         try {
             const organization = await Organization.findOne({ code: orgCode });
             if (!organization) return res.status(404).json({ msg: 'Organization not found' });

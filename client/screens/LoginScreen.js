@@ -1,15 +1,24 @@
 import React, { useState } from "react";
-import { Layout, Text, Input, Button } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/API";
-import { StyleSheet,Alert } from "react-native";
+import {  Keyboard, TouchableWithoutFeedback, StyleSheet,Alert, View } from "react-native";
+
+const LoadingIndicator = (props) => (
+  <View style={[props.style, styles.indicator]}>
+    <Spinner size='small' />
+  </View>
+);
+
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
+  const [loading, setLoading] = useState(false)
   const handleLogin = async () => {
+    
     try {
+      setLoading(true);
       const response = await axios.post(`${api}/auth/login`, {
         email,
         password,
@@ -17,11 +26,12 @@ const LoginScreen = ({ navigation }) => {
       
       const { accessToken } = response.data;
       await AsyncStorage.setItem("token", accessToken);
-
+      setLoading(false)
       Alert.alert("Login successful");
       navigation.navigate("Home");
     } catch (error) {
-      console.log(error);
+      setLoading(false)
+      // console.log(error);
       
       Alert.alert(
         "Login failed",
@@ -31,6 +41,7 @@ const LoginScreen = ({ navigation }) => {
   };
 
   return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
     <Layout style={styles.container}>
       <Text status='primary' style={styles.title}>Welcome Back!</Text>
       <Input
@@ -48,7 +59,7 @@ const LoginScreen = ({ navigation }) => {
         secureTextEntry
         size="large"
       />
-      <Button appearance="outline" onPress={handleLogin} >Login</Button>
+      <Button accessoryLeft={loading && LoadingIndicator} appearance="outline" onPress={handleLogin} >{loading ? "":"Login"}</Button>
       <Button
       style={styles.button}
       status="info"
@@ -56,6 +67,7 @@ const LoginScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("UserType")}
       >Don't have an account?Register...</Button>
     </Layout>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -81,5 +93,9 @@ const styles = StyleSheet.create({
   },
   button:{
     margin:10,
-  }
+  },
+  indicator: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
 });

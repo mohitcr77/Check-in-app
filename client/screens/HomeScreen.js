@@ -35,7 +35,8 @@ export default function HomeScreen({ navigation }) {
       const token = await AsyncStorage.getItem("token");
       if (token) {
         const decoded = decodeToken(token);
-
+        // console.log(userInfo);
+        // console.log(officeLocation);
         setUserInfo(decoded);
         if (decoded.organization) {
           fetchOfficeLocation(decoded.organization);
@@ -53,15 +54,19 @@ export default function HomeScreen({ navigation }) {
         headers: { Authorization: `${token}` },
         params: { organization: organizationId },
       });
-      setOfficeLocation(response.data); // Set office location from API response
+      setOfficeLocation(response.data);
     } catch (error) {
       console.log("Error fetching office location:", error);
     }
   };
 
   useEffect(() => {
-    getUserInfo();
-  }, []);
+  const fetchUserInfo = async () => {
+    await getUserInfo();
+  };
+  fetchUserInfo();
+}, []);
+
 
   return (
     <Layout style={styles.container}>
@@ -126,7 +131,10 @@ export default function HomeScreen({ navigation }) {
               Check Out
             </Button>
           </Layout>
-          <Button
+          {userInfo?.role == "admin" &&
+            (
+              <>
+              <Button
             style={styles.button}
             appearance="outline"
             onPress={
@@ -143,6 +151,10 @@ export default function HomeScreen({ navigation }) {
           >
             List All Users
           </Button>
+          </>
+            )
+          }
+          
           <Button
             style={styles.button}
             appearance="ghost"

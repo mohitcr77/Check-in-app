@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Alert, StyleSheet } from 'react-native';
+import { Keyboard, TouchableWithoutFeedback, View, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../services/API';
+import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
 
 export default function JoinOrganizationScreen({ navigation }) {
   const [organizationCode, setOrganizationCode] = useState('');
@@ -18,7 +19,8 @@ export default function JoinOrganizationScreen({ navigation }) {
       );
 
       Alert.alert('Joined organization successfully');
-      navigation.navigate('Home');
+      await AsyncStorage.removeItem("token");
+      navigation.replace("Login");
     } catch (error) {
       
       Alert.alert('Error joining organization', error.response?.data?.msg || 'An error occurred');
@@ -26,10 +28,12 @@ export default function JoinOrganizationScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput style={styles.input} placeholder="Enter Organization Code" value={organizationCode} onChangeText={setOrganizationCode} />
-      <Button title="Join Organization" onPress={handleJoinOrganization} />
-    </View>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+    <Layout style={styles.container}>
+      <Input style={styles.input} placeholder="Enter Organization Code" value={organizationCode} onChangeText={setOrganizationCode} />
+      <Button onPress={handleJoinOrganization} appearance="outline" >Join Organization</Button>
+    </Layout>
+    </TouchableWithoutFeedback>
   );
 }
 

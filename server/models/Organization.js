@@ -12,6 +12,7 @@ const organizationSchema = new mongoose.Schema({
         required: true,
         unique: true,
         trim: true,
+        lowercase: true
     },
     address: {
         type: String,
