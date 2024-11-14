@@ -7,8 +7,10 @@ const adminCtrl = {
         try {
             const {_id} = req.user.organization; 
             
-            const users = await User.find({organization:_id}).select('-password');
-            const userNames = users.map(user => user.name);
+            const users = await User.find({organization:_id}).select('name profileImage');
+            console.log(users);
+            
+            const userNames = users.map(user =>({ name : user.name, profileImage : user.profileImage}));
             res.json(userNames);
         } catch (error) {
             res.status(500).json({error : error.message})
