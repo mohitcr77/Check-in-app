@@ -7,7 +7,7 @@ const adminCtrl = {
         try {
             const {_id} = req.user.organization; 
             
-            const users = await User.find({organization:_id}).select('name profileImage');
+            const users = await User.find({organization:_id}).select('name profileImage email');
             
             const userNames = users.map(user =>({ name : user.name, profileImage : user.profileImage, email: user.email}));
             res.json(userNames);
