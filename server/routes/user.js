@@ -8,6 +8,7 @@ const router = express.Router();
 router.get('/profile', authMiddleware, userCtrl.getProfile);
 router.put('/profile', authMiddleware, userCtrl.updateProfile);
 router.put('/change-password', authMiddleware, userCtrl.changePassword);
-router.post('/upload-profile-image', authMiddleware, upload.single("profileImage"), userCtrl.uploadProfileImage)
+router.post('/upload-profile-image', authMiddleware, upload.single("profileImage"), userCtrl.uploadProfileImage);
+router.delete('/delete', authMiddleware, userCtrl.deleteUser);
 
 export default router;
