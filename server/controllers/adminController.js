@@ -9,7 +9,7 @@ const adminCtrl = {
             
             const users = await User.find({organization:_id}).select('name profileImage');
             
-            const userNames = users.map(user =>({ name : user.name, profileImage : user.profileImage}));
+            const userNames = users.map(user =>({ name : user.name, profileImage : user.profileImage, email: user.email}));
             res.json(userNames);
         } catch (error) {
             res.status(500).json({error : error.message})
