@@ -9,14 +9,27 @@ import CreateOrganizationScreen from "./screens/organization/CreateOrganizationS
 import CreateOfficeLocation from "./screens/officeLocation/CreateOfficeLocation";
 import JoinOrganizationScreen from "./screens/organization/JoinOrganizationScreen";
 import GetAllUsers from "./screens/organization/GetAllUsers";
-import { Image } from "react-native";
+import { Image, View, StyleSheet } from "react-native";
 import * as eva from "@eva-design/eva";
-import { ApplicationProvider, useTheme } from "@ui-kitten/components";
+import { IconRegistry, ApplicationProvider, useTheme, Spinner } from "@ui-kitten/components";
 import AttendanceRecords from "./screens/AttendanceRecords";
+import { EvaIconsPack } from "@ui-kitten/eva-icons";
+import { useEffect, useState } from 'react';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import AttendanceHistoryScreen from "./screens/AttendanceHistoryScreen";
 
 function AppNavigator() {
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
   const Stack = createStackNavigator();
   const theme = useTheme();
+  
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('token');  
+      setIsLoggedIn(!!token);
+    };
+    checkToken();
+  }, []);
 
   const navigationScreens = [
     { name: "UserType", component: UserTypeScreen, headerShown: false },
@@ -24,20 +37,49 @@ function AppNavigator() {
     { name: "Register", component: RegisterScreen, headerShown: false },
     { name: "Home", component: HomeScreen, headerShown: true },
     { name: "Attendance", component: AttendanceScreen, headerShown: true },
-    { name: "CreateOrganization", component: CreateOrganizationScreen, headerShown: false },
-    { name: "CreateOfficeLocation", component: CreateOfficeLocation, headerShown: false },
-    { name: "JoinOrganization", component: JoinOrganizationScreen, headerShown: false },
+    {
+      name: "CreateOrganization",
+      component: CreateOrganizationScreen,
+      headerShown: false,
+    },
+    {
+      name: "CreateOfficeLocation",
+      component: CreateOfficeLocation,
+      headerShown: false,
+    },
+    {
+      name: "JoinOrganization",
+      component: JoinOrganizationScreen,
+      headerShown: false,
+    },
     { name: "GetAllUsers", component: GetAllUsers, headerShown: true },
-    { name: "AttendanceRecords", component: AttendanceRecords, headerShown: true }
+    {
+      name: "AttendanceRecords",
+      component: AttendanceRecords,
+      headerShown: true,
+    },
+    {
+      name: "GetMyRecords",
+      component: AttendanceHistoryScreen,
+      headerShown: true,
+    },
   ];
+
+  const LoadingIndicator = (props) => (
+    <View style={[props.style, styles.indicator]}>
+      <Spinner size='small' />
+    </View>
+  );
+
+  if (isLoggedIn === null) return <LoadingIndicator/>;
 
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="UserType"
+        initialRouteName={isLoggedIn ? 'Home' : 'UserType'}
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#33415c", 
+            backgroundColor: "#33415c",
           },
           headerTintColor: "#fff", // Global back button and text color
           headerTitleAlign: "center",
@@ -58,7 +100,7 @@ function AppNavigator() {
                         resizeMode="contain"
                       />
                     ),
-                    headerLeft: () => null, 
+                    headerLeft: () => null,
                   }
                 : { headerShown: false }
             }
@@ -69,10 +111,21 @@ function AppNavigator() {
   );
 }
 
+const styles = StyleSheet.create({
+  indicator: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
+
 export default function App() {
   return (
-    <ApplicationProvider {...eva} theme={eva.dark}>
-      <AppNavigator />
-    </ApplicationProvider>
+    <>
+      <IconRegistry icons={EvaIconsPack} />
+      <ApplicationProvider {...eva} theme={eva.dark}>
+        <AppNavigator />
+      </ApplicationProvider>
+    </>
   );
 }

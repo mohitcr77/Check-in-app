@@ -33,6 +33,8 @@ export default function HomeScreen({ navigation }) {
   const getUserInfo = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
+      // console.log(token);
+      
       if (token) {
         const decoded = decodeToken(token);
         // console.log(userInfo);
@@ -110,8 +112,7 @@ export default function HomeScreen({ navigation }) {
         </Layout>
         <Layout>
           <Layout style={styles.checkInContainer}>
-            <Button
-              status="success"
+            <Button 
               style={[styles.button, { flex: 1 }]}
               appearance="outline"
               onPress={() =>
@@ -120,8 +121,7 @@ export default function HomeScreen({ navigation }) {
             >
               Check In
             </Button>
-            <Button
-              status="warning"
+            <Button 
               style={[styles.button, { flex: 1 }]}
               appearance="outline"
               onPress={() =>
@@ -131,7 +131,7 @@ export default function HomeScreen({ navigation }) {
               Check Out
             </Button>
           </Layout>
-          {userInfo?.role == "admin" &&
+          {userInfo?.role == "admin" ?
             (
               <>
               <Button
@@ -152,6 +152,15 @@ export default function HomeScreen({ navigation }) {
             List All Users
           </Button>
           </>
+            ) : (
+              <Button
+            style={styles.button}
+            appearance="outline"
+            onPress={
+              () => navigation.navigate("GetMyRecords")
+              
+            }
+          >Get My Records</Button>
             )
           }
           

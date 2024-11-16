@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
-import {  KeyboardAvoidingView, Platform,Alert, StyleSheet, Switch, Keyboard, TouchableWithoutFeedback } from 'react-native';
+import {  KeyboardAvoidingView, Platform,Alert, StyleSheet, Switch, Keyboard, TouchableWithoutFeedback, View } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { api } from '../../services/API';
 import * as Location from 'expo-location'
 import { ActivityIndicator } from 'react-native';
-import { Layout, Text, Input, Button, Toggle } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Toggle, Spinner } from "@ui-kitten/components";
+
+const LoadingIndicator = (props) => (
+  <View style={[props.style, styles.indicator]}>
+    <Spinner size='small' />
+  </View>
+);
 
 const CreateOfficeLocation = ({navigation}) => {
   const [name, setName] = useState('');
@@ -14,6 +20,7 @@ const CreateOfficeLocation = ({navigation}) => {
   const [radius, setRadius] = useState('');
   const [useCurrentLocation, setUseCurrentLocation] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [loadingBtn, setLoadingBtn] = useState(false)
 
   const fetchCurrentLocation = async () => {
     try {
@@ -39,6 +46,7 @@ const CreateOfficeLocation = ({navigation}) => {
 
   const handleCreateLocation = async () => {
   try {
+    setLoadingBtn(true)
     const token = await AsyncStorage.getItem('token');
       // console.log("++++++", token);
       
@@ -52,11 +60,15 @@ const CreateOfficeLocation = ({navigation}) => {
       },
       { headers: { Authorization: `${token}` } }
     );
-
+    setLoadingBtn(false)
     Alert.alert('Office location created successfully');
     await AsyncStorage.removeItem("token");
-    navigation.replace("Login");
+    navigation.reset({
+      index: 0,
+      routes: [{ name: "Login" }],
+    });
   } catch (error) {
+    setLoadingBtn(false)
     // console.log(error.response.data);
     
     Alert.alert('Error creating location', error.response?.data?.msg || 'An error occurred');
@@ -79,6 +91,10 @@ const toggleCurrentLocation = async () => {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.container}
       >
+        <Text style={styles.title} status="primary">Enter your Office Location</Text>
+        <Text style={styles.text} appearance="hint">
+          Hint : Your employees can check-in only in the defined radius from the location.
+        </Text>
     <Input
       style={styles.input}
       placeholder="Location Name"
@@ -96,7 +112,7 @@ const toggleCurrentLocation = async () => {
 
     {loading && (
         <Layout>
-        <ActivityIndicator size="large" color="#0000ff" /> 
+        <Spinner style={{ width: 30, height: 30 }} status='primary' /> 
         <Text>Fetching your location...</Text>
         </Layout>
       ) }
@@ -126,7 +142,7 @@ const toggleCurrentLocation = async () => {
       keyboardType="numeric"
     />
 
-    <Button appearance='outline' onPress={handleCreateLocation} >Create Office Location</Button>
+    <Button disabled={loadingBtn} accessoryLeft={loadingBtn && LoadingIndicator} appearance='outline' onPress={handleCreateLocation} >Create Office Location</Button>
   </KeyboardAvoidingView>
   </Layout>
   </TouchableWithoutFeedback>
@@ -154,7 +170,15 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         justifyContent: 'space-around'
       },
-      loader:{
-        
-      }
+      text: {
+        margin: 2,
+        padding: 10,
+        alignSelf: "center",
+        letterSpacing: 2,
+      },
+      title: {
+        fontSize: 25,
+        marginBottom: 20,
+        textAlign: "center",
+      },
 })

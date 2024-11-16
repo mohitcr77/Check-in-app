@@ -6,22 +6,22 @@ const UserTypeScreen = ({ navigation }) => {
   return (
     <Layout style={styles.container}>
       <Text status="primary" style={styles.title}>
-        SELECT USER TYPE
+        SELECT YOUR ROLE
       </Text>
       <Button
-        status="success"
         size="large"
         style={styles.button}
+        appearance="outline"
         onPress={() => navigation.navigate("Register", { role: "admin" })}
       >
-        {() => <Text style={{ color: "#ffffff" }}>Register for admin</Text>}
+        Register as Admin
       </Button>
       <Button
-        status="warning"
         style={styles.button}
+        appearance="outline"
         onPress={() => navigation.navigate("Register", { role: "employee" })}
       >
-        {() => <Text style={{ color: "#ffffff" }}>Register for Employee</Text>}
+        Register as Employee
         
       </Button>
       <Button

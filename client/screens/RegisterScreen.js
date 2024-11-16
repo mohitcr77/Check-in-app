@@ -3,8 +3,9 @@ import React, { useState } from "react";
 import { api } from "../services/API";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Layout, Text, Input, Button, Spinner } from "@ui-kitten/components";
+import { Layout, Text, Input, Button, Spinner, CheckBox } from "@ui-kitten/components";
 import * as ImagePicker from "expo-image-picker";
+import { checkIsEmpty, checkValidPassword } from "../helpers/errorHelper";
 
 const LoadingIndicator = (props) => (
   <View style={[props.style, styles.indicator]}>
@@ -16,13 +17,28 @@ const RegisterScreen = ({ navigation, route }) => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [profileImage, setProfileImage] = useState(null);
   const { role } = route.params;
   const [organizationCode, setOrganizationCode] = useState("");
   const [loading, setLoading] = useState(false)
+  const [checked, setChecked] = useState(false);
 
   const handleRegister = async () => {
     try {
+      checkIsEmpty(name, "name");
+      checkIsEmpty(email, "email");
+      checkIsEmpty(password, "password");
+      checkIsEmpty(confirmPassword, "confirm-password");
+
+      checkValidPassword(password)
+
+      if(confirmPassword !== password){
+        const error = new Error(`Passwords do not match`);
+        error.response = { data: { msg: `Passwords do not match` } };
+        throw error;
+      }
+    
       setLoading(true);
       const payload = { name, email, password, role };
 
@@ -79,7 +95,7 @@ const RegisterScreen = ({ navigation, route }) => {
         type: "image/jpeg",
         name: "profile.jpg",
       });
-      console.log(formData);
+      // console.log(formData);
       
       await axios.post(`${api}/users/upload-profile-image`, formData, {
         headers: {
@@ -124,8 +140,22 @@ const RegisterScreen = ({ navigation, route }) => {
         placeholder="Password"
         value={password}
         onChangeText={setPassword}
-        secureTextEntry
+        secureTextEntry={!checked}
       />
+      <Input
+      size="large"
+        style={styles.input}
+        placeholder="Confirm Password"
+        value={confirmPassword}
+        onChangeText={setConfirmPassword}
+        secureTextEntry={!checked}
+      />
+      <CheckBox
+      checked={checked}
+      onChange={nextChecked => setChecked(nextChecked)}
+    >
+      Show Password
+    </CheckBox>
       {/* {role === "employee" && (
         <Input
         size="large"
@@ -146,7 +176,7 @@ const RegisterScreen = ({ navigation, route }) => {
         )}
       </TouchableOpacity>
 
-      <Button accessoryLeft={loading && LoadingIndicator} style={styles.button} appearance="outline" onPress={handleRegister}>{loading ? "":"Register"}</Button>
+      <Button disabled={loading} accessoryLeft={loading && LoadingIndicator} style={styles.button} appearance="outline" onPress={handleRegister}>{loading ? "":"Register"}</Button>
       <Button
       status="info"
         appearance="ghost"
@@ -163,7 +193,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
-    padding: 10,
+    padding: 20
   },
   title: {
     fontSize: 30,
@@ -173,12 +203,12 @@ const styles = StyleSheet.create({
   input: {
     borderWidth: 1,
     borderColor: "#ccc",
-    padding: 10,
+    paddingVertical:10,
     marginBottom: 5,
     borderRadius: 5,
   },
   button:{
-    margin: 18
+    marginVertical: 18
   },
   imagePicker: {
     alignItems: "center",
@@ -194,7 +224,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   text:{
-    padding: 10
+    paddingVertical: 20
   },
   indicator: {
     justifyContent: 'center',
