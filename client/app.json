@@ -2,7 +2,7 @@
   "expo": {
     "name": "client",
     "slug": "client",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/logo2.png",
     "userInterfaceStyle": "dark",
@@ -18,17 +18,19 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo2.png",
-        "backgroundColor": "#121212"
+        "backgroundColor": "#121212",
+        "versionCode": 2
       },
-      "package": "com.mohit7.client"
+      "package": "com.mohitcr77.client"
     },
     "web": {
       "favicon": "./assets/images/logo.png"
     },
     "extra": {
       "eas": {
-        "projectId": "ebcb0521-cf9f-4146-bfeb-1b64d7f57bef"
+        "projectId": "9a969248-2fac-4757-be18-97b65d28f37e"
       }
-    }
+    },
+    "owner": "mohitcr77"
   }
 }
