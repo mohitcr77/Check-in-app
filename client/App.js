@@ -9,7 +9,7 @@ import CreateOrganizationScreen from "./screens/organization/CreateOrganizationS
 import CreateOfficeLocation from "./screens/officeLocation/CreateOfficeLocation";
 import JoinOrganizationScreen from "./screens/organization/JoinOrganizationScreen";
 import GetAllUsers from "./screens/organization/GetAllUsers";
-import { Image, View, StyleSheet } from "react-native";
+import { Image, View, StyleSheet, StatusBar, Platform } from "react-native";
 import * as eva from "@eva-design/eva";
 import { IconRegistry, ApplicationProvider, useTheme, Spinner } from "@ui-kitten/components";
 import AttendanceRecords from "./screens/AttendanceRecords";
@@ -75,13 +75,22 @@ function AppNavigator() {
 
   return (
     <NavigationContainer>
+      <StatusBar
+        backgroundColor="#1A2138"
+        barStyle="light-content"
+      />
       <Stack.Navigator
         initialRouteName={isLoggedIn ? 'Home' : 'UserType'}
         screenOptions={{
           headerStyle: {
-            backgroundColor: "#33415c",
+            backgroundColor: "#1A2138",
+            elevation: 0, // Android
+            shadowOpacity: 0, // iOS
+            borderBottomWidth: 1,
+            height: Platform.OS === 'ios' ? 110 : 80,
+            borderBottomColor: "#535353"
           },
-          headerTintColor: "#fff", // Global back button and text color
+          headerTintColor: "#fff",
           headerTitleAlign: "center",
         }}
       >
@@ -94,13 +103,15 @@ function AppNavigator() {
               screen.headerShown
                 ? {
                     headerTitle: () => (
-                      <Image
-                        source={require("./assets/images/header.png")}
-                        style={{ width: 200, height: 60 }}
-                        resizeMode="contain"
-                      />
+                      <View style={styles.headerContainer}>
+                        <Image
+                          source={require("./assets/images/header.png")}
+                          style={styles.headerImage}
+                          resizeMode="contain"
+                        />
+                      </View>
                     ),
-                    headerLeft: () => null,
+                    headerLeft: null,
                   }
                 : { headerShown: false }
             }
@@ -112,10 +123,26 @@ function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#222B45'
+  },
+  headerContainer: {
+    paddingHorizontal: 20,
+    height: '100%',
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  headerImage: {
+    width: 180,
+    height: 50
+  },
   indicator: {
     justifyContent: 'center',
     alignItems: 'center',
-  },
+  }
 });
 
 

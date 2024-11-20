@@ -18,10 +18,11 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logo2.png",
-        "backgroundColor": "#121212",
-        "versionCode": 2
+        "backgroundColor": "#121212"
+       
       },
-      "package": "com.mohitcr77.client"
+      "package": "com.mohitcr77.client",
+      "versionCode": 2
     },
     "web": {
       "favicon": "./assets/images/logo.png"

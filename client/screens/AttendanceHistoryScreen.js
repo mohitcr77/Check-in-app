@@ -10,12 +10,10 @@ export default function AttendanceHistoryScreen({ navigation }) {
   const [loading, setLoading] = useState(false);
   const [attendanceRecords, setAttendanceRecords] = useState([]);
 
-  // Fetch attendance data on mount
   useEffect(() => {
     fetchAttendanceRecords();
   }, []);
 
-  // Function to fetch attendance records from the past month
   const fetchAttendanceRecords = async () => {
     setLoading(true);
     try {
@@ -37,7 +35,6 @@ export default function AttendanceHistoryScreen({ navigation }) {
     }
   };
 
-  // Render each attendance record in the FlatList
   const renderItem = ({ item }) => (
     <Layout style={styles.recordItem}>
       <Text category="h6">Date: {format(new Date(item.check_in_time), 'yyyy-MM-dd')}</Text>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Image, ScrollView } from "react-native";
+import { StyleSheet, Image, ScrollView, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { Layout, Text, Button } from "@ui-kitten/components";
+import { Layout, Text, Button, Avatar, Card } from "@ui-kitten/components";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import { api } from "../services/API";
@@ -76,103 +76,110 @@ export default function HomeScreen({ navigation }) {
         contentContainerStyle={styles.scrollContainer}
         showsVerticalScrollIndicator={false}
       >
-        <Layout style={styles.infoContainer}>
-          {userInfo && userInfo.organization && (
-            <>
-              <Text style={styles.text} status="info" category="h5">
-                Organization : {userInfo.organization.name}
-              </Text>
+        {userInfo && (
+          <>
+            <View style={styles.profileSection}>
+              <Image
+                style={!userInfo.profileImage ? {width:150, height: 150} : {width:150, height: 150, borderRadius: 150}}
+                source={
+                  userInfo.profileImage ?
+                  {uri: userInfo.profileImage}: 
+                  userInfo?.role === "admin"
+                    ? require("../assets/images/manager.png")
+                    : require("../assets/images/employee.png")
+                   }
+              />
+              <Text style={styles.welcomeText}>Welcome,</Text>
+              <Text style={styles.nameText}>{userInfo.name}</Text>
+            </View>
+
+            <Card style={styles.infoCard}>
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Organization</Text>
+                <Text style={styles.infoValue}>{userInfo.organization?.name}</Text>
+              </View>
               {officeLocation && (
-                <Text style={styles.text} status="info" category="h6">
-                  Office : {officeLocation.name}
-                </Text>
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Office</Text>
+                  <Text style={styles.infoValue}>{officeLocation?.name}</Text>
+                </View>
               )}
-              <Text style={styles.text} status="info" category="h6">
-                Name : {userInfo.name}
-              </Text>
-              <Text style={styles.text} status="info" category="h6">
-                Email : {userInfo.email}
-              </Text>
-              <Text style={styles.text} status="info" category="h6">
-                Role : {userInfo.role}
-              </Text>
-            </>
-          )}
-        </Layout>
-        <Layout style={styles.imageContainer}>
-          <Image
-            source={
-              userInfo?.role == "admin"
-                ? require("../assets/images/manager.png")
-                : require("../assets/images/employee.png")
-            }
-            style={{ width: 250, height: 150 }}
-            resizeMode="cover"
-          />
-        </Layout>
-        <Layout>
-          <Layout style={styles.checkInContainer}>
-            <Button 
-              style={[styles.button, { flex: 1 }]}
-              appearance="outline"
-              onPress={() =>
-                navigation.navigate("Attendance", { action: "checkin" })
-              }
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Email</Text>
+                <Text style={styles.infoValue}>{userInfo.email}</Text>
+              </View>
+              { userInfo?.role === "admin" && (
+                <View style={styles.infoRow}>
+                  <Text style={styles.infoLabel}>Organization Code</Text>
+                  <Text style={styles.infoValue}>{userInfo.organization?.code}</Text>
+                </View>
+              )}
+              <View style={styles.infoRow}>
+                <Text style={styles.infoLabel}>Role</Text>
+                <Text style={styles.infoValue}>{userInfo.role === 'employee' ? 'User' : 'Admin'}</Text>
+              </View>
+            </Card>
+
+            <Card style={styles.actionCard}>
+              <Text style={styles.sectionTitle}>Quick Actions</Text>
+              <View style={styles.checkInContainer}>
+                <Button
+                  style={[styles.checkButton, styles.checkInButton]}
+                  status="success"
+                  onPress={() => navigation.navigate("Attendance", { action: "checkin" })}
+                >
+                  Check In
+                </Button>
+                <Button
+                  style={[styles.checkButton, styles.checkOutButton]}
+                  status="danger"
+                  onPress={() => navigation.navigate("Attendance", { action: "checkout" })}
+                >
+                  Check Out
+                </Button>
+              </View>
+            </Card>
+
+            <Card style={styles.actionCard}>
+              <Text style={styles.sectionTitle}>Management</Text>
+              {userInfo?.role === "admin" ? (
+                <View>
+                  <Button
+                    style={styles.button}
+                    status="primary"
+                    onPress={() => navigation.navigate("AttendanceRecords")}
+                  >
+                    View Attendance Records
+                  </Button>
+                  <Button
+                    style={styles.button}
+                    status="info"
+                    onPress={() => navigation.navigate("GetAllUsers")}
+                  >
+                    List All Users
+                  </Button>
+                </View>
+              ) : (
+                <Button
+                  style={styles.button}
+                  status="info"
+                  onPress={() => navigation.navigate("GetMyRecords")}
+                >
+                  View My Records
+                </Button>
+              )}
+            </Card>
+
+            <Button
+              style={styles.logoutButton}
+              appearance="ghost"
+              status="danger"
+              onPress={handleLogout}
             >
-              Check In
+              Logout
             </Button>
-            <Button 
-              style={[styles.button, { flex: 1 }]}
-              appearance="outline"
-              onPress={() =>
-                navigation.navigate("Attendance", { action: "checkout" })
-              }
-            >
-              Check Out
-            </Button>
-          </Layout>
-          {userInfo?.role == "admin" ?
-            (
-              <>
-              <Button
-            style={styles.button}
-            appearance="outline"
-            onPress={
-              () => navigation.navigate("AttendanceRecords")
-              
-            }
-          >
-            View Attendance Records
-          </Button>
-          <Button
-            style={styles.button}
-            appearance="outline"
-            onPress={() => navigation.navigate("GetAllUsers")}
-          >
-            List All Users
-          </Button>
           </>
-            ) : (
-              <Button
-            style={styles.button}
-            appearance="outline"
-            onPress={
-              () => navigation.navigate("GetMyRecords")
-              
-            }
-          >Get My Records</Button>
-            )
-          }
-          
-          <Button
-            style={styles.button}
-            appearance="ghost"
-            status="danger"
-            onPress={handleLogout}
-          >
-            Logout
-          </Button>
-        </Layout>
+        )}
       </ScrollView>
     </Layout>
   );
@@ -181,35 +188,71 @@ export default function HomeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "flex-start",
-    padding: 20,
-  },
-  button: {
-    margin: 10,
-  },
-  checkInContainer: {
-    display: "flex",
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  infoContainer: {
-    marginBottom: 20,
-    borderWidth: 1,
-    padding: 20,
-    borderRadius: 10,
-    borderColor: "#14697e",
-    justifyContent: "space-around",
-    backgroundColor: "#14697e2d",
-  },
-  text: {
-    margin: 8,
-  },
-  imageContainer: {
-    justifyContent: "center",
-    alignItems: "center",
-    margin: 10,
+    backgroundColor: '#222B45'
   },
   scrollContainer: {
     flexGrow: 1,
+    padding: 16
   },
+  profileSection: {
+    alignItems: 'center',
+    marginVertical: 20
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: '#8F9BB3',
+    marginTop: 10
+  },
+  nameText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginTop: 5
+  },
+  infoCard: {
+    backgroundColor: '#1A2138',
+    marginBottom: 16,
+    borderRadius: 12
+  },
+  actionCard: {
+    backgroundColor: '#1A2138',
+    marginBottom: 16,
+    borderRadius: 12
+  },
+  infoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#2E3A59'
+  },
+  infoLabel: {
+    color: '#8F9BB3',
+    fontSize: 14
+  },
+  infoValue: {
+    color: '#FFFFFF',
+    fontSize: 14,
+    fontWeight: '500'
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    marginBottom: 16
+  },
+  checkInContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 10
+  },
+  checkButton: {
+    flex: 1
+  },
+  button: {
+    marginBottom: 10
+  },
+  logoutButton: {
+    marginTop: 10
+  }
 });

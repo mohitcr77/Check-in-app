@@ -1,4 +1,4 @@
-import { Keyboard, TouchableWithoutFeedback, Image, StyleSheet, Alert, TouchableOpacity, View } from "react-native";
+import { Keyboard, TouchableWithoutFeedback, Image, StyleSheet, Alert, TouchableOpacity, View, ScrollView } from "react-native";
 import React, { useState } from "react";
 import { api } from "../services/API";
 import axios from "axios";
@@ -23,15 +23,59 @@ const RegisterScreen = ({ navigation, route }) => {
   const [organizationCode, setOrganizationCode] = useState("");
   const [loading, setLoading] = useState(false)
   const [checked, setChecked] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateInputs = () => {
+    let tempErrors = {};
+    const minLength = 8;
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasLowerCase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+    if (!name.trim()) tempErrors.name = "Name is required";
+    if (!email.trim()) tempErrors.email = "Email is required";
+    if (!confirmPassword.trim()) tempErrors.confirmPassword = "Confirm Password is required";
+
+    if (!hasUpperCase) {
+      tempErrors.password =
+        "Password must contain at least one uppercase letter";
+    }
+
+    if (!hasLowerCase) {
+      tempErrors.password =
+        "Password must contain at least one lowercase letter";
+    }
+
+    if (!hasSpecialChar) {
+      tempErrors.password =
+        "Password must contain at least one special character";
+    }
+    if (!hasNumber) {
+      tempErrors.password = "Password must contain at least one number";
+    }
+    if (password.length < minLength) {
+      tempErrors.password = `Password must be at least ${minLength} characters long`;
+    }
+    if (!password.trim()) tempErrors.password = "Password is required";
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   const handleRegister = async () => {
     try {
-      checkIsEmpty(name, "name");
-      checkIsEmpty(email, "email");
-      checkIsEmpty(password, "password");
-      checkIsEmpty(confirmPassword, "confirm-password");
+      if (!validateInputs()) return;
+      // checkIsEmpty(name, "name");
+      // checkIsEmpty(email, "email");
+      // checkIsEmpty(password, "password");
+      // checkIsEmpty(confirmPassword, "confirm-password");
 
-      checkValidPassword(password)
+      // checkValidPassword(password)
+
+      // setName(name.trim())
+      // setEmail(email.trim())
+      // setConfirmPassword(confirmPassword.trim())
+      // setPassword(password.trim)
+
 
       if(confirmPassword !== password){
         const error = new Error(`Passwords do not match`);
@@ -115,74 +159,110 @@ const RegisterScreen = ({ navigation, route }) => {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-    <Layout style={styles.container}>
-      <Text status="primary" style={styles.title}>
-        Register as {role === "admin" ? "Admin" : "Employee"}
-      </Text>
-      <Input
-        size="large"
-        style={styles.input}
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-      />
-      <Input
-      size="large"
-        style={styles.input}
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        autoCapitalize="none"
-      />
-      <Input
-      size="large"
-        style={styles.input}
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry={!checked}
-      />
-      <Input
-      size="large"
-        style={styles.input}
-        placeholder="Confirm Password"
-        value={confirmPassword}
-        onChangeText={setConfirmPassword}
-        secureTextEntry={!checked}
-      />
-      <CheckBox
-      checked={checked}
-      onChange={nextChecked => setChecked(nextChecked)}
-    >
-      Show Password
-    </CheckBox>
-      {/* {role === "employee" && (
-        <Input
-        size="large"
-          style={styles.input}
-          placeholder="Organization Code"
-          value={organizationCode}
-          onChangeText={setOrganizationCode}
-        />
-      )} */}
+      <Layout style={styles.container}>
+        <ScrollView 
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={styles.scrollContent}
+        >
+          <View style={styles.headerContainer}>
+            <Text status="primary" style={styles.title}>Create {role === "admin" ? "Admin" : "User"} Account</Text>
+            <Text style={styles.subtitle}>Enter your details to get started</Text>
+          </View>
 
-      <Text style={styles.text} category="p1">Upload Profile Image</Text>
+          <View style={styles.formContainer}>
+            <TouchableOpacity onPress={pickImage} style={styles.profileImageContainer}>
+              {profileImage ? (
+                <Image source={{ uri: profileImage }} style={styles.profileImage} />
+              ) : (
+                <View style={styles.profileImagePlaceholder}>
+                  <Text style={styles.profileImageText}>Upload Photo</Text>
+                </View>
+              )}
+            </TouchableOpacity>
 
-      <TouchableOpacity onPress={pickImage} style={styles.imagePicker}>
-        {profileImage ? (
-          <Image source={{ uri: profileImage }} style={styles.profileImage} />
-        ) : (
-          <Text style={styles.placeholderText}>Select Profile Photo</Text>
-        )}
-      </TouchableOpacity>
+            <Input
+              style={styles.input}
+              placeholder="Full Name"
+              value={name}
+              onChangeText={(text) => {
+                setName(text);
+                setErrors({ ...errors, name: null });
+              }}
+              size="large"
+              status={errors.name ? "danger" : "basic"}
+              caption={errors.name}
+            />
+            <Input
+              style={styles.input}
+              placeholder="Email Address"
+              value={email}
+              onChangeText={(text) => {
+                setEmail(text);
+                setErrors({ ...errors, email: null });
+              }}
+              autoCapitalize="none"
+              status={errors.email ? "danger" : "basic"}
+              caption={errors.email}
+              size="large"
+            />
+            <Input
+              style={styles.input}
+              placeholder="Password"
+              value={password}
+              onChangeText={(text) => {
+                setPassword(text);
+                setErrors({ ...errors, password: null });
+              }}
+              secureTextEntry={!checked}
+              size="large"
+              caption={errors.password}
+              status={errors.password ? "danger" : "basic"}
+            />
+            <Input
+              style={styles.input}
+              placeholder="Confirm Password"
+              value={confirmPassword}
+              onChangeText={(text) => {
+                setConfirmPassword(text);
+                setErrors({ ...errors, confirmPassword: null });
+              }}
+              secureTextEntry={!checked}
+              status={errors.confirmPassword ? "danger" : "basic"}
+              size="large"
+              caption={errors.confirmPassword}
+            />
 
-      <Button disabled={loading} accessoryLeft={loading && LoadingIndicator} style={styles.button} appearance="outline" onPress={handleRegister}>{loading ? "":"Register"}</Button>
-      <Button
-      status="info"
-        appearance="ghost"
-        onPress={() => navigation.navigate("UserType")}
-      >Back to User Select</Button>
-    </Layout>
+            <View style={styles.checkboxContainer}>
+              <CheckBox
+                checked={checked}
+                onChange={nextChecked => setChecked(nextChecked)}
+              >
+                Show Password
+              </CheckBox>
+            </View>
+
+            <Button 
+              style={styles.registerButton}
+              appearance="filled"
+              size="large"
+              disabled={loading}
+              accessoryLeft={loading ? LoadingIndicator : null}
+              onPress={handleRegister}
+            >
+              {loading ? "" : "Create Account"}
+            </Button>
+
+            <TouchableOpacity 
+              style={styles.loginLink}
+              onPress={() => navigation.navigate("Login")}
+            >
+              <Text style={styles.loginLinkText}>
+                Already have an account? Login
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Layout>
     </TouchableWithoutFeedback>
   );
 };
@@ -192,42 +272,79 @@ export default RegisterScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    backgroundColor: '#222B45' // Dark background matching Eva Dark theme
+  },
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: 'center',
     padding: 20
   },
+  headerContainer: {
+    alignItems: 'center',
+    marginBottom: 30
+  },
   title: {
-    fontSize: 30,
-    marginBottom: 20,
-    textAlign: "center",
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 10
   },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ccc",
-    paddingVertical:10,
-    marginBottom: 5,
-    borderRadius: 5,
+  subtitle: {
+    fontSize: 16,
+    color: '#8F9BB3',
+    textAlign: 'center'
   },
-  button:{
-    marginVertical: 18
+  formContainer: {
+    backgroundColor: '#2a3457', 
+    borderRadius: 15,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 5
   },
-  imagePicker: {
-    alignItems: "center",
-    marginBottom: 20,
+  profileImageContainer: {
+    alignSelf: 'center',
+    marginBottom: 20
   },
   profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    alignSelf: 'center'
   },
-  placeholderText: {
-    color: "#666",
-    textAlign: "center",
+  profileImagePlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    backgroundColor: '#f0f0f0',
+    justifyContent: 'center',
+    alignItems: 'center'
   },
-  text:{
-    paddingVertical: 20
+  profileImageText: {
+    color: '#666'
+  },
+  input: {
+    marginBottom: 15,
+    borderRadius: 10
+  },
+  checkboxContainer: {
+    marginBottom: 20,
+    alignSelf: 'flex-start'
+  },
+  registerButton: {
+    borderRadius: 10,
+    marginBottom: 15
+  },
+  loginLink: {
+    alignSelf: 'center'
+  },
+  loginLinkText: {
+    color: '#007bff',
+    fontWeight: '600'
   },
   indicator: {
     justifyContent: 'center',
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 });
