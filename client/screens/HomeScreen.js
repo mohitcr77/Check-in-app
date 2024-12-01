@@ -5,6 +5,9 @@ import { Layout, Text, Button, Avatar, Card } from "@ui-kitten/components";
 import jwt_decode from "jwt-decode";
 import axios from "axios";
 import { api } from "../services/API";
+import { startGeofencing } from "../components/geofencingTask";
+import { getDistance } from "../helpers/getDistance";
+import * as Location from "expo-location";
 
 export default function HomeScreen({ navigation }) {
   const handleLogout = async () => {
@@ -13,7 +16,9 @@ export default function HomeScreen({ navigation }) {
   };
 
   const [userInfo, setUserInfo] = useState(null);
-  const [officeLocation, setOfficeLocation] = useState(null);
+  const [officeLocations, setOfficeLocations] = useState([]);
+  const [nearestLocation, setNearestLocation] = useState(null);
+  const [currentCoords, setCurrentCoords] = useState(null);
 
   const decodeToken = (token) => {
     const base64Url = token.split(".")[1];
@@ -41,7 +46,7 @@ export default function HomeScreen({ navigation }) {
         // console.log(officeLocation);
         setUserInfo(decoded);
         if (decoded.organization) {
-          fetchOfficeLocation(decoded.organization);
+          await fetchOfficeLocations(decoded.organization);
         }
       }
     } catch (error) {
@@ -49,18 +54,81 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
-  const fetchOfficeLocation = async (organizationId) => {
+  // const fetchOfficeLocation = async (organizationId) => {
+  //   try {
+  //     const token = await AsyncStorage.getItem("token");
+  //     const response = await axios.get(`${api}/location/office`, {
+  //       headers: { Authorization: `${token}` },
+  //       params: { organization: organizationId },
+  //     });
+  //     setOfficeLocation(response.data);
+  //   } catch (error) {
+  //     console.log("Error fetching office location:", error);
+  //   }
+  // };
+
+  const fetchOfficeLocations = async (organizationId) => {
     try {
       const token = await AsyncStorage.getItem("token");
       const response = await axios.get(`${api}/location/office`, {
         headers: { Authorization: `${token}` },
         params: { organization: organizationId },
       });
-      setOfficeLocation(response.data);
+
+      const locations = Array.isArray(response.data) ? response.data : [response.data];
+      setOfficeLocations(locations);
+
+      if (locations.length) {
+        const nearest = await findNearestLocation(locations);
+        setNearestLocation(nearest);
+
+        const geofences = locations.map((loc) => ({
+          identifier: loc._id,
+          latitude: loc.latitude,
+          longitude: loc.longitude,
+          radius: loc.radius_meters,
+          notifyOnEnter: true,
+          notifyOnExit: true,
+        }));
+
+        console.log("Starting geofencing for", geofences);
+        startGeofencing(geofences);
+      }
     } catch (error) {
-      console.log("Error fetching office location:", error);
+      console.error("Error fetching office locations:", error.message);
     }
   };
+
+  const findNearestLocation = async (locations) => {
+    try {
+      const currentPosition = await Location.getCurrentPositionAsync();
+      setCurrentCoords(currentPosition.coords);
+
+      let nearest = null;
+      let minDistance = Infinity;
+
+      locations.forEach((loc) => {
+        const distance = getDistance(
+          currentPosition.coords.latitude,
+          currentPosition.coords.longitude,
+          loc.latitude,
+          loc.longitude
+        );
+
+        if (distance < loc.radius_meters && distance < minDistance) {
+          nearest = loc;
+          minDistance = distance;
+        }
+      });
+
+      return nearest;
+    } catch (error) {
+      console.error("Error finding nearest location:", error.message);
+      return null;
+    }
+  };
+
+  
 
   useEffect(() => {
   const fetchUserInfo = async () => {
@@ -98,12 +166,12 @@ export default function HomeScreen({ navigation }) {
                 <Text style={styles.infoLabel}>Organization</Text>
                 <Text style={styles.infoValue}>{userInfo.organization?.name}</Text>
               </View>
-              {officeLocation && (
-                <View style={styles.infoRow}>
-                  <Text style={styles.infoLabel}>Office</Text>
-                  <Text style={styles.infoValue}>{officeLocation?.name}</Text>
-                </View>
-              )}
+              {nearestLocation && (
+              <View style={styles.infoRow}>
+              <Text style={styles.infoLabel}>Nearest Office</Text>
+              <Text style={styles.infoValue}>{nearestLocation?.name}</Text>
+            </View>
+            )}
               <View style={styles.infoRow}>
                 <Text style={styles.infoLabel}>Email</Text>
                 <Text style={styles.infoValue}>{userInfo.email}</Text>
