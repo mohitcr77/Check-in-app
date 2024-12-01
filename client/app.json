@@ -1,37 +1,126 @@
 {
   "expo": {
-    "name": "client",
+    "name": "AttendEase",
     "slug": "client",
-    "version": "1.0.1",
+    "version": "1.1.2",
     "orientation": "portrait",
-    "icon": "./assets/images/logo2.png",
+    "icon": "./assets/images/logoV2.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/logo2.png",
+      "image": "./assets/images/logoV2.png",
       "resizeMode": "contain",
       "backgroundColor": "#121212"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.mohitcr77.client",
+      "buildNumber": "1.1.0",
+      "display": "standalone",
+      "name": "AttendEase",
+      "splash": {
+        "image": "./assets/images/header.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#121212",
+        "dark": {
+          "image": "./assets/images/header.png",
+          "backgroundColor": "#121212"
+        }
+      },
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "location",
+          "fetch",
+          "remote-notification"
+        ],
+        "NSLocationWhenInUseUsageDescription": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+        "NSLocationAlwaysUsageDescription": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+        "NSLocationTemporaryUsageDescriptionDictionary": {
+          "GeofencingPurpose": "AttendEase uses your location for automatic check-ins and check-outs"
+        },
+        "NSCameraUsageDescription": "AttendEase needs access to your camera for profile photo updates.",
+        "NSPhotoLibraryUsageDescription": "AttendEase needs access to your photos for profile photo updates."
+      }
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/logo2.png",
-        "backgroundColor": "#121212"
-       
+        "foregroundImage": "./assets/images/logoV2.png",
+        "backgroundColor": "#121212",
+        "foregroundImageInset": 0,
+        "backgroundImageInset": 0,
+        "monochrome": "./assets/images/logoV2.png"
       },
       "package": "com.mohitcr77.client",
-      "versionCode": 2
+      "versionCode": 5,
+      "display": "standalone",
+      "name": "AttendEase",
+      "splash": {
+        "image": "./assets/images/header.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#121212",
+        "dark": {
+          "image": "./assets/images/header.png",
+          "backgroundColor": "#121212"
+        }
+      },
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_BACKGROUND_LOCATION",
+        "FOREGROUND_SERVICE",
+        "RECEIVE_BOOT_COMPLETED",
+        "VIBRATE",
+        "WAKE_LOCK",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE"
+      ],
+      "config": {
+        "googleMaps": {
+          "backgroundModes": ["location"]
+        }
+      }
     },
     "web": {
-      "favicon": "./assets/images/logo.png"
+      "favicon": "./assets/images/logoV2.png"
     },
+    "plugins": [
+      "expo-splash-screen",
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+          "locationAlwaysPermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+          "locationWhenInUsePermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
+          "isIosBackgroundLocationEnabled": true,
+          "isAndroidBackgroundLocationEnabled": true
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "AttendEase needs access to your photos for profile photo updates.",
+          "cameraPermission": "AttendEase needs access to your camera for profile photo updates."
+        }
+      ],
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/logoV2.png",
+          "color": "#121212",
+          "sounds": ["./assets/sounds/notification.wav"]
+        }
+      ]
+    ],
     "extra": {
       "eas": {
         "projectId": "9a969248-2fac-4757-be18-97b65d28f37e"
       }
     },
-    "owner": "mohitcr77"
+    "owner": "mohitcr77",
+    "updates": {
+      "fallbackToCacheTimeout": 0,
+      "url": "https://u.expo.dev/9a969248-2fac-4757-be18-97b65d28f37e"
+    }
   }
 }
