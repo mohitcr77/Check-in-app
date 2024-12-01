@@ -14,22 +14,57 @@ import * as eva from "@eva-design/eva";
 import { IconRegistry, ApplicationProvider, useTheme, Spinner } from "@ui-kitten/components";
 import AttendanceRecords from "./screens/AttendanceRecords";
 import { EvaIconsPack } from "@ui-kitten/eva-icons";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AttendanceHistoryScreen from "./screens/AttendanceHistoryScreen";
+import * as SplashScreen from 'expo-splash-screen';
+import CustomSplash from './components/CustomSplash'
+
+SplashScreen.preventAutoHideAsync();
 
 function AppNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [appIsReady, setAppIsReady] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const Stack = createStackNavigator();
   const theme = useTheme();
   
   useEffect(() => {
-    const checkToken = async () => {
-      const token = await AsyncStorage.getItem('token');  
-      setIsLoggedIn(!!token);
-    };
-    checkToken();
+    async function prepare() {
+      try {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const token = await AsyncStorage.getItem('token');  
+        setIsLoggedIn(!!token);
+        
+        await Promise.all([
+          // Add resource loading for future
+          SplashScreen.hideAsync()
+        ]);
+
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setAppIsReady(true);
+        setTimeout(() => {
+          setShowSplash(false);
+        }, 2000);
+      }
+    }
+
+    prepare();
   }, []);
+
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) {
+      await SplashScreen.hideAsync();
+    }
+  }, [appIsReady]);
+
+  if (!appIsReady || showSplash) {
+    return <CustomSplash />;
+  } 
+
 
   const navigationScreens = [
     { name: "UserType", component: UserTypeScreen, headerShown: false },
@@ -65,16 +100,16 @@ function AppNavigator() {
     },
   ];
 
-  const LoadingIndicator = (props) => (
-    <View style={[props.style, styles.indicator]}>
-      <Spinner size='small' />
-    </View>
-  );
+  // const LoadingIndicator = (props) => (
+  //   <View style={[props.style, styles.indicator]}>
+  //     <Spinner size='small' />
+  //   </View>
+  // );
 
-  if (isLoggedIn === null) return <LoadingIndicator/>;
+  // if (isLoggedIn === null) return <LoadingIndicator/>;
 
   return (
-    <NavigationContainer>
+    <NavigationContainer  onLayout={onLayoutRootView}>
       <StatusBar
         backgroundColor="#1A2138"
         barStyle="light-content"

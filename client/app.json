@@ -8,7 +8,7 @@
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/images/logo-splash.png",
+      "image": "./assets/images/logoV2.png",
       "resizeMode": "contain",
       "backgroundColor": "#121212"
     },
@@ -18,15 +18,6 @@
       "buildNumber": "1.1.0",
       "display": "standalone",
       "name": "AttendEase",
-      "splash": {
-        "image": "./assets/images/header.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#121212",
-        "dark": {
-          "image": "./assets/images/header.png",
-          "backgroundColor": "#121212"
-        }
-      },
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
@@ -55,15 +46,6 @@
       "versionCode": 5,
       "display": "standalone",
       "name": "AttendEase",
-      "splash": {
-        "image": "./assets/images/header.png",
-        "resizeMode": "contain",
-        "backgroundColor": "#121212",
-        "dark": {
-          "image": "./assets/images/header.png",
-          "backgroundColor": "#121212"
-        }
-      },
       "permissions": [
         "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION",
@@ -73,7 +55,8 @@
         "VIBRATE",
         "WAKE_LOCK",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "CAMERA"
       ],
       "config": {
         "googleMaps": {
