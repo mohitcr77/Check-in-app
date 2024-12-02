@@ -2,7 +2,7 @@
   "expo": {
     "name": "AttendEase",
     "slug": "client",
-    "version": "1.1.2",
+    "version": "1.2.1",
     "orientation": "portrait",
     "icon": "./assets/images/logoV2.png",
     "userInterfaceStyle": "dark",
@@ -16,8 +16,6 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.mohitcr77.client",
       "buildNumber": "1.1.0",
-      "display": "standalone",
-      "name": "AttendEase",
       "infoPlist": {
         "UIBackgroundModes": [
           "location",
@@ -37,73 +35,23 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/logoV2.png",
-        "backgroundColor": "#121212",
-        "foregroundImageInset": 0,
-        "backgroundImageInset": 0,
-        "monochrome": "./assets/images/logoV2.png"
+        "backgroundColor": "#121212"
       },
       "package": "com.mohitcr77.client",
-      "versionCode": 5,
-      "display": "standalone",
-      "name": "AttendEase",
+      "versionCode": 6,
       "permissions": [
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "ACCESS_BACKGROUND_LOCATION",
-        "FOREGROUND_SERVICE",
-        "RECEIVE_BOOT_COMPLETED",
-        "VIBRATE",
-        "WAKE_LOCK",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "CAMERA"
-      ],
-      "config": {
-        "googleMaps": {
-          "backgroundModes": ["location"]
-        }
-      }
+        "ACCESS_BACKGROUND_LOCATION"
+      ]
     },
     "web": {
       "favicon": "./assets/images/logoV2.png"
     },
-    "plugins": [
-      "expo-splash-screen",
-      [
-        "expo-location",
-        {
-          "locationAlwaysAndWhenInUsePermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
-          "locationAlwaysPermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
-          "locationWhenInUsePermission": "AttendEase needs your location to manage automatic check-ins at your workplace.",
-          "isIosBackgroundLocationEnabled": true,
-          "isAndroidBackgroundLocationEnabled": true
-        }
-      ],
-      [
-        "expo-image-picker",
-        {
-          "photosPermission": "AttendEase needs access to your photos for profile photo updates.",
-          "cameraPermission": "AttendEase needs access to your camera for profile photo updates."
-        }
-      ],
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/images/logoV2.png",
-          "color": "#121212",
-          "sounds": ["./assets/sounds/notification.wav"]
-        }
-      ]
-    ],
     "extra": {
       "eas": {
         "projectId": "9a969248-2fac-4757-be18-97b65d28f37e"
       }
     },
-    "owner": "mohitcr77",
-    "updates": {
-      "fallbackToCacheTimeout": 0,
-      "url": "https://u.expo.dev/9a969248-2fac-4757-be18-97b65d28f37e"
-    }
+    "owner": "mohitcr77"
   }
 }

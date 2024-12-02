@@ -24,46 +24,62 @@ SplashScreen.preventAutoHideAsync();
 
 function AppNavigator() {
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-  const [appIsReady, setAppIsReady] = useState(false);
-  const [showSplash, setShowSplash] = useState(true);
+  // const [appIsReady, setAppIsReady] = useState(false);
+  // const [showSplash, setShowSplash] = useState(true);
   const Stack = createStackNavigator();
   const theme = useTheme();
-  
+
   useEffect(() => {
-    async function prepare() {
-      try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        const token = await AsyncStorage.getItem('token');  
-        setIsLoggedIn(!!token);
-        
-        await Promise.all([
-          // Add resource loading for future
-          SplashScreen.hideAsync()
-        ]);
-
-      } catch (e) {
-        console.warn(e);
-      } finally {
-        setAppIsReady(true);
-        setTimeout(() => {
-          setShowSplash(false);
-        }, 2000);
-      }
-    }
-
-    prepare();
+    const checkToken = async () => {
+      const token = await AsyncStorage.getItem('token');  
+      setIsLoggedIn(!!token);
+    };
+    checkToken();
   }, []);
+  
+  // useEffect(() => {
+  //   async function prepare() {
+  //     try {
+  //       await new Promise(resolve => setTimeout(resolve, 1000));
+        
+  //       const token = await AsyncStorage.getItem('token');  
+  //       setIsLoggedIn(!!token);
+        
+  //       await Promise.all([
+  //         // Add resource loading for future
+  //         SplashScreen.hideAsync()
+  //       ]);
 
-  const onLayoutRootView = useCallback(async () => {
-    if (appIsReady) {
-      await SplashScreen.hideAsync();
-    }
-  }, [appIsReady]);
+  //     } catch (e) {
+  //       console.warn(e);
+  //     } finally {
+  //       setAppIsReady(true);
+  //       setTimeout(() => {
+  //         setShowSplash(false);
+  //       }, 2000);
+  //     }
+  //   }
 
-  if (!appIsReady || showSplash) {
-    return <CustomSplash />;
-  } 
+  //   prepare();
+  // }, []);
+
+  // const onLayoutRootView = useCallback(async () => {
+  //   if (appIsReady) {
+  //     await SplashScreen.hideAsync();
+  //   }
+  // }, [appIsReady]);
+
+  // if (!appIsReady || showSplash) {
+  //   return <CustomSplash />;
+  // } 
+
+  const LoadingIndicator = (props) => (
+    <View style={[props.style, styles.indicator]}>
+      <Spinner size='small' />
+    </View>
+  );
+
+  if (isLoggedIn === null) return <LoadingIndicator/>;
 
 
   const navigationScreens = [
@@ -109,7 +125,9 @@ function AppNavigator() {
   // if (isLoggedIn === null) return <LoadingIndicator/>;
 
   return (
-    <NavigationContainer  onLayout={onLayoutRootView}>
+    <NavigationContainer  
+    // onLayout={onLayoutRootView}
+    >
       <StatusBar
         backgroundColor="#1A2138"
         barStyle="light-content"
