@@ -15,6 +15,17 @@ const attendanceController = {
                 return res.status(400).json({ msg: 'You are not within the defined perimeter' });
             }
 
+            const recordSearch = await AttendanceRecord.findOne({
+                user: req.user.userId,
+                location: location._id,
+                check_out_time: null
+            }).sort({ check_in_time: -1 });
+            console.log(recordSearch);
+            
+            if (recordSearch) {
+                return res.status(400).json({ msg: 'You have already checked-in' });
+            }
+
             const record = new AttendanceRecord({
                 user: req.user.userId,
                 location: location._id,
