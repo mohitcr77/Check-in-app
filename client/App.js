@@ -17,6 +17,7 @@ import { EvaIconsPack } from "@ui-kitten/eva-icons";
 import { useEffect, useState, useCallback } from 'react';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AttendanceHistoryScreen from "./screens/AttendanceHistoryScreen";
+import AnalyticsScreen from "./screens/AnalyticsScreen";
 import * as SplashScreen from 'expo-splash-screen';
 import CustomSplash from './components/CustomSplash'
 
@@ -112,6 +113,11 @@ function AppNavigator() {
     {
       name: "GetMyRecords",
       component: AttendanceHistoryScreen,
+      headerShown: true,
+    },
+    {
+      name: "Analytics",
+      component: AnalyticsScreen,
       headerShown: true,
     },
   ];

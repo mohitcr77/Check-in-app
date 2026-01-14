@@ -61,3 +61,9 @@ TypeError: Assignment to constant variable.
     at next (D:\Attendance app\server\node_modules\express\lib\router\route.js:149:13)
     at file:///D:/Attendance%20app/server/middleware/authMiddleware.js:27:13
     at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+2026-01-13 19:30:02 [[31merror[39m]: uncaughtException: listen EADDRINUSE: address already in use 0.0.0.0:5000
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)

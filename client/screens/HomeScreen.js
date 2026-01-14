@@ -89,10 +89,11 @@ export default function HomeScreen({ navigation }) {
           radius: loc.radius_meters,
           notifyOnEnter: true,
           notifyOnExit: true,
+          name: loc.name, // Include name for better notifications
         }));
 
         console.log("Starting geofencing for", geofences);
-        startGeofencing(geofences);
+        await startGeofencing(geofences);
       }
     } catch (error) {
       console.error("Error fetching office locations:", error.message);
@@ -228,13 +229,22 @@ export default function HomeScreen({ navigation }) {
                   </Button>
                 </View>
               ) : (
-                <Button
-                  style={styles.button}
-                  status="info"
-                  onPress={() => navigation.navigate("GetMyRecords")}
-                >
-                  View My Records
-                </Button>
+                <>
+                  <Button
+                    style={styles.button}
+                    status="info"
+                    onPress={() => navigation.navigate("GetMyRecords")}
+                  >
+                    View My Records
+                  </Button>
+                  <Button
+                    style={styles.button}
+                    status="success"
+                    onPress={() => navigation.navigate("Analytics")}
+                  >
+                    Work-Life Analytics
+                  </Button>
+                </>
               )}
             </Card>
 

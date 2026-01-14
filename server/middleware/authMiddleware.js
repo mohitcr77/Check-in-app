@@ -6,7 +6,11 @@ const authMiddleware = (req, res, next) => {
         const authHeader = req.header("Authorization");
         if (!authHeader) return res.status(400).json({ msg: "No token provided" });
 
-        const token = authHeader
+        // Support both "Bearer token" and direct token formats
+        const token = authHeader.startsWith('Bearer ')
+            ? authHeader.substring(7)
+            : authHeader;
+
         if (!token) return res.status(400).json({ msg: "Invalid Authentication" });
 
         // console.log("Token:", token);

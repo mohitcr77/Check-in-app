@@ -19,11 +19,24 @@ const adminCtrl = {
         const {userId} = req.params
         const {role} = req.body;
         try {
-            const user = await User.findByIdAndUpdate(
-                userId,
-                {role},
-                {new: true}).select('-password');
-            if(!user) return res.status(404).json({msg : 'User not found'});
+            // SECURITY FIX: Validate role value
+            const allowedRoles = ['employee', 'admin'];
+            if (!allowedRoles.includes(role)) {
+                return res.status(400).json({ msg: 'Invalid role' });
+            }
+
+            // SECURITY FIX: Ensure user belongs to admin's organization
+            const user = await User.findById(userId).populate('organization');
+            if (!user) return res.status(404).json({ msg: 'User not found' });
+
+            // Check organization scope
+            if (user.organization && user.organization._id.toString() !== req.user.organization.toString()) {
+                return res.status(403).json({ msg: 'You can only modify users in your organization' });
+            }
+
+            user.role = role;
+            await user.save();
+
             res.json(user);
         } catch (error) {
             res.status(500).json({error : error.message})
@@ -32,10 +45,22 @@ const adminCtrl = {
     getUserAttendance: async (req, res) => {
         try {
             const {userId} = req.params
-            const {_id} = req.user.organization; 
-            
-            // const users = await User.find({organization:_id}).select('-password');
-            const records = await AttendanceRecord.find({ user:userId }).select('check_in_time check_out_time') .sort({ check_in_time: -1 });
+            const {_id} = req.user.organization;
+
+            // SECURITY FIX: Verify user belongs to admin's organization
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({ msg: 'User not found' });
+            }
+
+            if (user.organization && user.organization.toString() !== _id.toString()) {
+                return res.status(403).json({ msg: 'You can only view attendance for users in your organization' });
+            }
+
+            const records = await AttendanceRecord.find({ user:userId })
+                .populate('location', 'name')
+                .select('check_in_time check_out_time location')
+                .sort({ check_in_time: -1 });
             res.json(records);
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -44,8 +69,21 @@ const adminCtrl = {
     deleteUser: async (req, res) => {
         const { userId } = req.params;
         try {
-            const user = await User.findByIdAndDelete(userId);
+            // SECURITY FIX: Verify user belongs to admin's organization before deletion
+            const user = await User.findById(userId);
             if (!user) return res.status(404).json({ msg: 'User not found' });
+
+            // Check organization scope
+            if (user.organization && user.organization.toString() !== req.user.organization.toString()) {
+                return res.status(403).json({ msg: 'You can only delete users in your organization' });
+            }
+
+            // Prevent admin from deleting themselves
+            if (user._id.toString() === req.user.userId.toString()) {
+                return res.status(400).json({ msg: 'You cannot delete your own account' });
+            }
+
+            await User.findByIdAndDelete(userId);
             res.json({ msg: 'User deleted successfully' });
         } catch (error) {
             res.status(500).json({ error: error.message });
@@ -54,13 +92,48 @@ const adminCtrl = {
     generateReport: async (req, res) => {
         const { startDate, endDate, userId, locationId } = req.body;
         try {
+            // SECURITY FIX: Validate input and enforce organization scope
             const query = {};
-            if (startDate) query.check_in_time = { $gte: new Date(startDate) };
-            if (endDate) query.check_in_time = { $lte: new Date(endDate) };
-            if (userId) query.user = userId;
-            if (locationId) query.location = locationId;
 
-            const records = await AttendanceRecord.find(query).populate('user location');
+            // Build date range query
+            if (startDate && endDate) {
+                query.check_in_time = {
+                    $gte: new Date(startDate),
+                    $lte: new Date(endDate)
+                };
+            } else if (startDate) {
+                query.check_in_time = { $gte: new Date(startDate) };
+            } else if (endDate) {
+                query.check_in_time = { $lte: new Date(endDate) };
+            }
+
+            // SECURITY FIX: Validate userId belongs to admin's organization
+            if (userId) {
+                const user = await User.findById(userId);
+                if (!user || user.organization.toString() !== req.user.organization.toString()) {
+                    return res.status(403).json({ msg: 'Invalid user or user not in your organization' });
+                }
+                query.user = userId;
+            } else {
+                // If no userId provided, get all users from admin's organization
+                const orgUsers = await User.find({ organization: req.user.organization }).select('_id');
+                query.user = { $in: orgUsers.map(u => u._id) };
+            }
+
+            // SECURITY FIX: Validate locationId belongs to admin's organization
+            if (locationId) {
+                const location = await Location.findById(locationId);
+                if (!location || location.organization.toString() !== req.user.organization.toString()) {
+                    return res.status(403).json({ msg: 'Invalid location or location not in your organization' });
+                }
+                query.location = locationId;
+            }
+
+            const records = await AttendanceRecord.find(query)
+                .populate('user', 'name email')
+                .populate('location', 'name')
+                .sort({ check_in_time: -1 });
+
             res.json(records);
         } catch (error) {
             res.status(500).json({ error: error.message });

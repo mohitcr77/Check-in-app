@@ -1,5 +1,5 @@
 import * as Notifications from "expo-notifications";
-import * as Permissions from "expo-permissions";
+import { Platform } from "react-native";
 
 // Configure how notifications should be displayed
 Notifications.setNotificationHandler({
@@ -12,20 +12,34 @@ Notifications.setNotificationHandler({
 
 // Request notification permissions
 export const requestNotificationPermissions = async () => {
-  const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
-  let finalStatus = existingStatus;
+  try {
+    if (Platform.OS === 'android') {
+      await Notifications.setNotificationChannelAsync('default', {
+        name: 'default',
+        importance: Notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: '#FF231F7C',
+      });
+    }
 
-  if (existingStatus !== "granted") {
-    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
-    finalStatus = status;
-  }
+    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    let finalStatus = existingStatus;
 
-  if (finalStatus !== "granted") {
-    console.error("Failed to get notification permissions!");
+    if (existingStatus !== "granted") {
+      const { status } = await Notifications.requestPermissionsAsync();
+      finalStatus = status;
+    }
+
+    if (finalStatus !== "granted") {
+      console.error("Failed to get notification permissions!");
+      return false;
+    }
+
+    return true;
+  } catch (error) {
+    console.error("Error requesting notification permissions:", error);
     return false;
   }
-
-  return true;
 };
 
 // Send a local notification
