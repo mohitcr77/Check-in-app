@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Layout, Text, Button, Datepicker, Select, SelectItem, List, ListItem, IndexPath } from "@ui-kitten/components";
-import axios from "axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import axiosInstance from "../services/axiosConfig";
 import { api } from "../services/API";
 import { StyleSheet } from "react-native";
 export default function AttendanceRecords() {
@@ -16,12 +15,9 @@ export default function AttendanceRecords() {
     }, []);
 
     const fetchLocations = async () => {
-        const token = await AsyncStorage.getItem("token");
         try {
-            const response = await axios.get(`${api}/admin/getLocations`, {
-                headers: { Authorization: `${token}` },
-            });
-            
+            const response = await axiosInstance.get(`${api}/admin/getLocations`);
+
             setLocations(response.data);
         } catch (error) {
             console.error("Error fetching locations:", error);
@@ -35,12 +31,10 @@ export default function AttendanceRecords() {
         }
 
         setLoading(true);
-        const token = await AsyncStorage.getItem("token");
         const formattedDate = date.toISOString().split("T")[0];
 
         try {
-            const response = await axios.get(`${api}/admin/attendanceRecords/date`, {
-                headers: { Authorization: `${token}` },
+            const response = await axiosInstance.get(`${api}/admin/attendanceRecords/date`, {
                 params: { date: formattedDate, location: locations[selectedLocation.row]._id },
             });
             setRecords(response.data);
@@ -68,7 +62,12 @@ export default function AttendanceRecords() {
                 ))}
             </Select>
 
-            <Button style={{ marginTop: 10 }} onPress={fetchAttendanceRecords} disabled={loading}>
+            <Button
+                style={styles.fetchButton}
+                onPress={fetchAttendanceRecords}
+                disabled={loading}
+                size="large"
+            >
                 {loading ? "Loading..." : "Fetch Records"}
             </Button>
 
@@ -99,6 +98,12 @@ const styles = StyleSheet.create({
   title: {
     marginBottom: 10,
     textAlign: "center",
+  },
+  fetchButton: {
+    marginTop: 20,
+    marginBottom: 10,
+    width: '100%',
+    height: 56,
   },
   button: {
     marginVertical: 10,

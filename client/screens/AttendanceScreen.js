@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Alert, StyleSheet, ActivityIndicator, Image } from "react-native";
 import * as Location from "expo-location";
-import axios from "axios";
+import axiosInstance from "../services/axiosConfig";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "../services/API";
 import { getDistance } from "../helpers/getDistance";
@@ -48,10 +48,7 @@ export default function AttendanceScreen({ route, navigation }) {
 
   const fetchOrganizationLocations = async (currentCoords) => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await axios.get(`${api}/location/organization`, {
-        headers: { Authorization: `${token}` },
-      });
+      const response = await axiosInstance.get(`${api}/location/organization`);
 
       setOfficeLocations(response.data);
 
@@ -97,15 +94,13 @@ export default function AttendanceScreen({ route, navigation }) {
     }
 
     try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await axios.post(
+      const response = await axiosInstance.post(
         `${api}/attendance/${action}`,
         {
           locationId: nearestLocation._id,
           latitude: location.latitude,
           longitude: location.longitude,
-        },
-        { headers: { Authorization: `${token}` } }
+        }
       );
       Alert.alert(
         `${action.charAt(0).toUpperCase() + action.slice(1)} Successfully`

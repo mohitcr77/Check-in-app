@@ -67,3 +67,15 @@ Error: listen EADDRINUSE: address already in use 0.0.0.0:5000
     at listenInCluster (node:net:1965:12)
     at doListen (node:net:2139:7)
     at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+2026-01-14 11:56:03 [[31merror[39m]: uncaughtException: listen EADDRINUSE: address already in use 0.0.0.0:5001
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5001
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)
+2026-01-14 11:56:18 [[31merror[39m]: uncaughtException: listen EADDRINUSE: address already in use 0.0.0.0:5001
+Error: listen EADDRINUSE: address already in use 0.0.0.0:5001
+    at Server.setupListenHandle [as _listen2] (node:net:1908:16)
+    at listenInCluster (node:net:1965:12)
+    at doListen (node:net:2139:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:83:21)

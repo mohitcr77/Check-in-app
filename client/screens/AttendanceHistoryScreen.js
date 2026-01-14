@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Layout, Text, Button, Spinner } from '@ui-kitten/components';
-import { FlatList, StyleSheet, View, Alert } from 'react-native';
-import axios from 'axios';
+import { FlatList, StyleSheet, View, Alert, Dimensions } from 'react-native';
+import axiosInstance from '../services/axiosConfig';
 import { api } from '../services/API';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format, subMonths } from 'date-fns';
 
 export default function AttendanceHistoryScreen({ navigation }) {
@@ -17,19 +16,15 @@ export default function AttendanceHistoryScreen({ navigation }) {
   const fetchAttendanceRecords = async () => {
     setLoading(true);
     try {
-      const token = await AsyncStorage.getItem('token');
-      const response = await axios.get(`${api}/attendance/records`, {
-        headers: { Authorization: `${token}` }
-      });
+      const response = await axiosInstance.get(`${api}/attendance/records`);
 
-
-      
       // Filter records from the past month
       const oneMonthAgo = subMonths(new Date(), 1);
       const recentRecords = response.data.filter(record => new Date(record.check_in_time) >= oneMonthAgo);
       setAttendanceRecords(recentRecords);
     } catch (error) {
-      Alert.alert('Error', 'Could not fetch attendance records');
+      console.error('Error fetching records:', error);
+      Alert.alert('Error', error.response?.data?.msg || 'Could not fetch attendance records');
     } finally {
       setLoading(false);
     }
@@ -86,5 +81,7 @@ const styles = StyleSheet.create({
   },
   button: {
     marginTop: 15,
+    width: '100%',
+    height: 56,
   },
 });

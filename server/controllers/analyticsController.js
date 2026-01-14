@@ -36,7 +36,8 @@ const analyticsController = {
 
             res.json(analytics);
         } catch (error) {
-            res.status(500).json({ error: error.message });
+            console.error('Analytics error:', error);
+            res.status(500).json({ error: error.message, details: error.stack });
         }
     },
 
@@ -160,7 +161,7 @@ function calculateUserAnalytics(records, period) {
             );
             totalMinutes += minutes;
 
-            const date = format(new Date(record.check_in_time), 'yyyy-MM-DD');
+            const date = format(new Date(record.check_in_time), 'yyyy-MM-dd');
             dailyHours[date] = (dailyHours[date] || 0) + minutes;
 
             // Track arrival times (hour of day)

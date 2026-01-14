@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, ScrollView, View, RefreshControl } from 'react-native';
 import { Layout, Text, Card, Button, Spinner } from '@ui-kitten/components';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import axios from 'axios';
+import axiosInstance from '../services/axiosConfig';
 import { api } from '../services/API';
 
 export default function AnalyticsScreen({ navigation }) {
@@ -10,6 +9,7 @@ export default function AnalyticsScreen({ navigation }) {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [period, setPeriod] = useState('week'); // week, month
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     fetchAnalytics();
@@ -18,15 +18,23 @@ export default function AnalyticsScreen({ navigation }) {
   const fetchAnalytics = async () => {
     try {
       setLoading(true);
-      const token = await AsyncStorage.getItem('token');
+      setError(null);
 
-      const response = await axios.get(`${api}/analytics/user?period=${period}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axiosInstance.get(`${api}/analytics/user?period=${period}`);
 
       setAnalytics(response.data);
     } catch (error) {
       console.error('Error fetching analytics:', error);
+      setError(error.response?.data?.error || error.message || 'Failed to load analytics');
+      // Set default empty analytics on error
+      setAnalytics({
+        totalHours: 0,
+        averageHoursPerDay: 0,
+        totalDaysWorked: 0,
+        overtimeHours: 0,
+        healthScore: 100,
+        suggestions: ['Unable to load analytics data. Please try again.']
+      });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -63,6 +71,22 @@ export default function AnalyticsScreen({ navigation }) {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
+        {/* Error Message */}
+        {error && (
+          <Card status="danger" style={styles.errorCard}>
+            <Text category="s1" status="danger">{error}</Text>
+            <Button
+              size="small"
+              status="danger"
+              appearance="outline"
+              onPress={fetchAnalytics}
+              style={{ marginTop: 10 }}
+            >
+              Retry
+            </Button>
+          </Card>
+        )}
+
         {/* Period Selector */}
         <View style={styles.periodSelector}>
           <Button
@@ -215,6 +239,11 @@ const styles = StyleSheet.create({
   loadingText: {
     marginTop: 16,
     color: '#8F9BB3'
+  },
+  errorCard: {
+    marginBottom: 16,
+    borderWidth: 1,
+    borderColor: '#FF3D71'
   },
   periodSelector: {
     flexDirection: 'row',

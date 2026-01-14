@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Image, ScrollView, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Layout, Text, Button, Avatar, Card } from "@ui-kitten/components";
-import jwt_decode from "jwt-decode";
-import axios from "axios";
+import { jwtDecode } from "jwt-decode";
+import axiosInstance from "../services/axiosConfig";
 import { api } from "../services/API";
 import { startGeofencing } from "../components/geofencingTask";
 import { getDistance } from "../helpers/getDistance";
@@ -69,9 +69,7 @@ export default function HomeScreen({ navigation }) {
 
   const fetchOfficeLocations = async (organizationId) => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await axios.get(`${api}/location/office`, {
-        headers: { Authorization: `${token}` },
+      const response = await axiosInstance.get(`${api}/location/office`, {
         params: { organization: organizationId },
       });
 

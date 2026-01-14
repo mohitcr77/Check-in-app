@@ -32,8 +32,16 @@ function AppNavigator() {
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = await AsyncStorage.getItem('token');  
-      setIsLoggedIn(!!token);
+      try {
+        const token = await AsyncStorage.getItem('token');
+        setIsLoggedIn(!!token);
+      } catch (error) {
+        console.error('Error checking token:', error);
+        setIsLoggedIn(false);
+      } finally {
+        // Hide splash screen after checking token
+        await SplashScreen.hideAsync();
+      }
     };
     checkToken();
   }, []);
